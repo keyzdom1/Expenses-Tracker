@@ -1,0 +1,41 @@
+# ---- Environment / secrets (never commit real values) ----
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---- Python / backend ----
+.venv/
+venv/
+var/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+.coverage.*
+.coverage.xml
+
+# ---- Node / frontend ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# ---- Editors / OS ----
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs / temp ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

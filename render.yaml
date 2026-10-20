@@ -1,0 +1,73 @@
+# Render blueprint: API web service + daily job.
+#
+# 1. Push this repository to GitHub.
+# 2. Render Dashboard -> Blueprints -> New Blueprint -> select the repo.
+# 3. Fill every `sync: false` value from your Supabase project.
+# 4. Set the same CRON_SECRET on both services.
+#
+# If your Render plan does not include cron jobs, keep only the web service and
+# schedule `POST /api/v1/jobs/run` from GitHub Actions or another scheduler.
+
+services:
+  - type: web
+    name: expense-tracker-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: API_V1_PREFIX
+        value: /api/v1
+      - key: CORS_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: MIGRATION_DATABASE_URL
+        sync: false
+      - key: TEST_DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWKS_URL
+        sync: false
+      - key: SUPABASE_JWT_AUD
+        value: authenticated
+      - key: SUPABASE_JWT_SECRET
+        value: ""
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_RECEIPTS_BUCKET
+        value: receipts
+      - key: SIGNED_URL_TTL_SECONDS
+        value: "300"
+      - key: RECEIPT_SIGNING_SECRET
+        generateValue: true
+      - key: DEFAULT_CURRENCY
+        value: NGN
+      - key: DEFAULT_TIMEZONE
+        value: Africa/Lagos
+      - key: RATE_LIMIT_DEFAULT
+        value: 120/minute
+      - key: CRON_SECRET
+        generateValue: true
+
+  - type: cron
+    name: expense-tracker-daily-job
+    runtime: python
+    rootDir: backend
+    schedule: "0 6 * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/run_daily_job.py
+    envVars:
+      - key: API_BASE_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
